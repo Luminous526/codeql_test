@@ -1,0 +1,32 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: UseDotNet@2
+  inputs:
+    packageType: 'sdk'
+    version: '8.x'
+    installationPath: $(Agent.ToolsDirectory)/dotnet
+
+- script: |
+    dotnet restore
+    dotnet build --configuration Release
+    dotnet test --configuration Release --collect:"XPlat Code Coverage"
+  displayName: 'Restore, Build, and Test'
+
+- task: PublishCodeCoverageResults@1
+  inputs:
+    codeCoverageTool: 'Cobertura'
+    summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.cobertura.xml'
+    reportDirectory: '$(System.DefaultWorkingDirectory)/CodeCoverage'
+    failIfCoverageEmpty: true
+
+- task: CodeQL@0
+  inputs:
+    languages: 'csharp'
+    configFile: '.github/codeql/codeql-config.yml'
