@@ -10,19 +10,18 @@ steps:
 - task: UseDotNet@2
   inputs:
     packageType: 'sdk'
-    version: '8.x'
+    version: '6.x'
     installationPath: $(Agent.ToolsDirectory)/dotnet
 
 - script: |
-    #current_folder=$(basename $(pwd))
-    current_folder="ind-tableau-alert-dashboard-risk-queue"
+    current_folder=$(basename $(pwd))
     project_path="$current_folder/$current_folder.csproj"
     dotnet restore $project_path
     dotnet build $project_path --configuration Release
     dotnet test $project_path --configuration Release --collect:"XPlat Code Coverage"
   displayName: 'Restore, Build, and Test'
 
-  script: |
+- script: |
     echo "Listing contents of $(System.DefaultWorkingDirectory):"
     ls -R $(System.DefaultWorkingDirectory)
   displayName: 'List Directory Contents'
