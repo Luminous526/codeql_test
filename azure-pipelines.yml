@@ -45,18 +45,15 @@ steps:
     unzip codeql-linux64.zip -d codeql
   displayName: 'Download and Initialize CodeQL Binary'
 
-# Clone the full CodeQL repository and perform sparse checkout on csharp queries
+# Full clone of the CodeQL repository to ensure all dependencies are available
 - script: |
     git clone --depth 1 https://github.com/github/codeql.git codeql-queries
-    cd codeql-queries
-    git sparse-checkout init --cone
-    git sparse-checkout set csharp
-  displayName: 'Clone Full CodeQL Repo and Checkout C# Queries'
+  displayName: 'Clone Full CodeQL Repository'
 
 # Step to install all dependencies for C# queries
 - script: |
     cd codeql-queries
-    ../codeql/codeql/codeql pack install csharp
+    ../codeql/codeql/codeql pack install
   displayName: 'Install CodeQL Pack Dependencies'
 
 # Step to create the CodeQL database
