@@ -36,8 +36,9 @@ steps:
     arguments: '--collect:"Code Coverage" --exclude "[*]ind-tableau-alert-dashboard-risk-queue-unittest.dll" --exclude "[*]StackExchange.Redis.dll"'
 
 # Step 5: Publish Code Coverage Results
-- task: PublishCodeCoverageResults@1
+- task: PublishCodeCoverageResults@2
   inputs:
-    codeCoverageTool: 'Coverlet'  # Use Coverlet for code coverage
-    summaryFileLocation: '$(Build.SourcesDirectory)/TestResults/*.xml'  # Path to the code coverage summary
-    reportDirectory: '$(Build.ArtifactStagingDirectory)/coverage-report'  # Output directory for coverage reports
+    codeCoverageTool: 'Coverlet'  # Tool you used for collecting coverage (e.g., Coverlet, Visual Studio, etc.)
+    summaryFileLocation: '$(Build.SourcesDirectory)/TestResults/*/coverage.cobertura.xml'  # Path to the code coverage report
+    reportDirectory: '$(Build.SourcesDirectory)/TestResults/*/codecoverage'
+    failIfCoverageFails: true  # Optional: Fail the build if the code coverage is below a threshold
