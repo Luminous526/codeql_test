@@ -18,8 +18,14 @@ steps:
     project_path="$current_folder/$current_folder.csproj"
     dotnet restore $project_path
     dotnet build $project_path --configuration Release
-    dotnet test $project_path --configuration Release --collect:"XPlat Code Coverage"
-  displayName: 'Restore, Build, and Test'
+  displayName: 'Restore and Build'
+
+- script: |
+    test_folder='ind-tableau-alert-dashboard-risk-queue-unittest'
+    test_project_path="$test_folder/FunctionTests.csproj"
+    results_directory="$(System.DefaultWorkingDirectory)/TestResults"
+    dotnet test $test_project_path --configuration Release --collect:"XPlat Code Coverage" --results-directory $results_directory
+  displayName: 'Run Tests and Collect Coverage'
 
 - script: |
     echo "Listing contents of $(System.DefaultWorkingDirectory):"
@@ -29,7 +35,7 @@ steps:
 - task: PublishCodeCoverageResults@2
   inputs:
     codeCoverageTool: 'Cobertura'
-    summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.cobertura.xml'
+    summaryFileLocation: '$(System.DefaultWorkingDirectory)/TestResults/**/coverage.cobertura.xml'
     reportDirectory: '$(System.DefaultWorkingDirectory)/CodeCoverage'
     failIfCoverageEmpty: true
 
