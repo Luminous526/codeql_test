@@ -45,23 +45,20 @@ steps:
     unzip codeql-linux64.zip -d codeql
   displayName: 'Download and Initialize CodeQL Binary'
 
-# Download only the csharp CodeQL queries as a zip file
+# Clone only the csharp CodeQL queries directly from the GitHub repository
 - script: |
-    wget https://github.com/github/codeql/archive/refs/heads/main.zip -O codeql-queries.zip
-    unzip codeql-queries.zip "codeql-main/csharp/*" -d codeql-queries
-  displayName: 'Download and Extract C# CodeQL Query Pack'
-
-# Install dependencies for C# query packs
-- script: |
-    ./codeql/codeql/codeql pack install codeql-queries/codeql-main/csharp
-  displayName: 'Install CodeQL Pack Dependencies'
+    git clone --depth 1 --filter=blob:none --sparse https://github.com/github/codeql.git codeql-queries
+    cd codeql-queries
+    git sparse-checkout init --cone
+    git sparse-checkout set csharp
+  displayName: 'Clone C# CodeQL Queries Only'
 
 # Step to create the CodeQL database
 - script: |
     ./codeql/codeql/codeql database create codeql-db --language=csharp --source-root=.
   displayName: 'Create CodeQL Database'
 
-# Step to analyze the database with CodeQL using the specific C# queries
+# Step to analyze the database with CodeQL using the C# queries
 - script: |
-    ./codeql/codeql/codeql database analyze codeql-db codeql-queries/codeql-main/csharp --format=sarif-latest --output=codeql-results.sarif
+    ./codeql/codeql/codeql database analyze codeql-db codeql-queries/csharp --format=sarif-latest --output=codeql-results.sarif
   displayName: 'Analyze with CodeQL'
