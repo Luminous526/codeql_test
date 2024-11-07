@@ -51,6 +51,11 @@ steps:
     unzip codeql-queries.zip "codeql-main/csharp/*" -d codeql-queries
   displayName: 'Download and Extract C# CodeQL Query Pack'
 
+# Install dependencies for C# query packs
+- script: |
+    ./codeql/codeql/codeql pack install codeql-queries/codeql-main/csharp
+  displayName: 'Install CodeQL Pack Dependencies'
+
 # Step to create the CodeQL database
 - script: |
     ./codeql/codeql/codeql database create codeql-db --language=csharp --source-root=.
