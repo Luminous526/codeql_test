@@ -67,3 +67,11 @@ steps:
     ./codeql database create codeql-db --language=csharp --source-root=.
     ./codeql database analyze codeql-db --format=sarif-latest --output=codeql-results.sarif
   displayName: 'Analyze with CodeQL'
+
+# Step 9: Publish CodeQL Results
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathToPublish: $(System.DefaultWorkingDirectory)/codeql/codeql-main/codeql-results.sarif
+    artifactName: 'codeql-results'
+    publishLocation: 'Container'
+  displayName: 'Publish CodeQL Results'
