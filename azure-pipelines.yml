@@ -1,77 +1,43 @@
 trigger:
-  branches:
-    include:
-      - main
+- main  # This triggers the pipeline for changes to the 'main' branch. Change if needed.
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: 'windows-latest'  # Using a Windows-based build agent
 
 steps:
-# Step 1: Install .NET SDK
+# Step 1: Install .NET SDK 8
 - task: UseDotNet@2
   inputs:
     packageType: 'sdk'
-    version: '8.x'
+    version: '8.x'  # Updated to .NET 8 SDK
     installationPath: $(Agent.ToolsDirectory)/dotnet
 
-# Step 2: Restore and Build the project
-- script: |
-    current_folder='ind-tableau-alert-dashboard-risk-queue'
-    project_path="$current_folder/$current_folder.csproj"
-    dotnet restore $project_path
-    dotnet build $project_path --configuration Release
-  displayName: 'Restore and Build'
+# Step 2: Restore NuGet Packages for the C# Project and Test Project
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'restore'
+    projects:
+      - 'ind-tableau-alert-dashboard-risk-queue/ind-tableau-alert-dashboard-risk-queue.csproj'  # Main project
+      - 'ind-tableau-alert-dashboard-risk-queue-unittest/ind-tableau-alert-dashboard-risk-queue-unittest.csproj'  # Test project
 
-# Step 3: Run Tests and Collect Coverage
-- script: |
-    test_folder='ind-tableau-alert-dashboard-risk-queue-unittest'
-    test_project_path="$test_folder/$test_folder.csproj"
-    results_directory="$(System.DefaultWorkingDirectory)/TestResults"
-    dotnet test $test_project_path --configuration Release --collect:"XPlat Code Coverage" --results-directory $results_directory
-  displayName: 'Run Tests and Collect Coverage'
+# Step 3: Build the Projects
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'build'
+    projects:
+      - 'ind-tableau-alert-dashboard-risk-queue/ind-tableau-alert-dashboard-risk-queue.csproj'
+      - 'ind-tableau-alert-dashboard-risk-queue-unittest/ind-tableau-alert-dashboard-risk-queue-unittest.csproj'
 
-# Step 4: List Directory Contents for Debugging
-- script: |
-    echo "Listing contents of $(System.DefaultWorkingDirectory):"
-    ls -R $(System.DefaultWorkingDirectory)
-  displayName: 'List Directory Contents'
+# Step 4: Run Tests and Collect Code Coverage
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'test'
+    projects: '**/ind-tableau-alert-dashboard-risk-queue-unittest/ind-tableau-alert-dashboard-risk-queue-unittest.csproj'  # Unit test project
+    arguments: '--collect:"Code Coverage"'  # Collect code coverage during tests
 
 # Step 5: Publish Code Coverage Results
-- task: PublishCodeCoverageResults@2
+- task: PublishCodeCoverageResults@1
   inputs:
-    codeCoverageTool: 'Cobertura'
-    summaryFileLocation: '$(System.DefaultWorkingDirectory)/TestResults/**/coverage.cobertura.xml'
-    reportDirectory: '$(System.DefaultWorkingDirectory)/CodeCoverage'
-    failIfCoverageEmpty: true
-
-# Step 6: Download and Initialize CodeQL
-- script: |
-    wget https://github.com/github/codeql/archive/refs/heads/main.zip -O codeql.zip
-    unzip codeql.zip -d codeql
-    cd codeql/codeql-main
-    # Check for correct extraction of the 'codeql' binary
-    ls -l
-    # Copy the C# queries to the working directory
-    cp -r csharp/ql $(System.DefaultWorkingDirectory)/codeql-queries
-  displayName: 'Download and Initialize CodeQL'
-
-# Step 7: Install CodeQL Pack Dependencies
-- script: |
-    cd $(System.DefaultWorkingDirectory)/codeql/codeql-main
-    ./codeql pack install
-  displayName: 'Install CodeQL Pack Dependencies'
-
-# Step 8: Analyze with CodeQL
-- script: |
-    cd $(System.DefaultWorkingDirectory)/codeql/codeql-main
-    ./codeql database create codeql-db --language=csharp --source-root=.
-    ./codeql database analyze codeql-db --format=sarif-latest --output=codeql-results.sarif
-  displayName: 'Analyze with CodeQL'
-
-# Step 9: Publish CodeQL Results
-- task: PublishBuildArtifacts@1
-  inputs:
-    pathToPublish: $(System.DefaultWorkingDirectory)/codeql/codeql-main/codeql-results.sarif
-    artifactName: 'codeql-results'
-    publishLocation: 'Container'
-  displayName: 'Publish CodeQL Results'
+    codeCoverageTool: 'Coverlet'  # Use Coverlet for code coverage
+    summaryFileLocation: '$(Build.SourcesDirectory)/TestResults/*.xml'  # Path to the code coverage summary
+    reportDirectory: '$(Build.ArtifactStagingDirectory)/coverage-report'  # Output directory for coverage reports
