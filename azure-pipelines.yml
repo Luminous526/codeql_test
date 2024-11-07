@@ -35,12 +35,6 @@ steps:
     projects: '**/ind-tableau-alert-dashboard-risk-queue-unittest/ind-tableau-alert-dashboard-risk-queue-unittest.csproj'
     arguments: '--collect:"Code Coverage"'
 
-# Step 5: List the contents of the TestResults folder (for debugging)
-- script: |
-    echo "Listing contents of TestResults folder:"
-    dir $(Build.SourcesDirectory)\TestResults
-  displayName: 'List Test Results Directory'
-
 # Step 6: Publish Code Coverage Results
 - task: PublishCodeCoverageResults@2
   inputs:
