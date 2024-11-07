@@ -28,12 +28,12 @@ steps:
       ind-tableau-alert-dashboard-risk-queue/ind-tableau-alert-dashboard-risk-queue.csproj
       ind-tableau-alert-dashboard-risk-queue-unittest/ind-tableau-alert-dashboard-risk-queue-unittest.csproj
 
-# Step 4: Run Tests and Collect Code Coverage
+# Step 4: Run Tests and Collect Code Coverage (only for main project)
 - task: DotNetCoreCLI@2
   inputs:
     command: 'test'
-    projects: '**/ind-tableau-alert-dashboard-risk-queue-unittest/ind-tableau-alert-dashboard-risk-queue-unittest.csproj'  # Unit test project
-    arguments: '--collect:"Code Coverage"'  # Collect code coverage during tests
+    projects: '**/ind-tableau-alert-dashboard-risk-queue-unittest/ind-tableau-alert-dashboard-risk-queue-unittest.csproj'
+    arguments: '--collect:"Code Coverage" --exclude "[*]ind-tableau-alert-dashboard-risk-queue-unittest.dll" --exclude "[*]StackExchange.Redis.dll"'
 
 # Step 5: Publish Code Coverage Results
 - task: PublishCodeCoverageResults@1
