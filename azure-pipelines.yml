@@ -1,44 +1,45 @@
 trigger:
-- main  # This triggers the pipeline for changes to the 'main' branch. Change if needed.
+- main  # or the branch you want to trigger on
 
 pool:
-  vmImage: 'windows-latest'  # Using a Windows-based build agent
+  vmImage: 'ubuntu-latest'  # Use an appropriate image (e.g., ubuntu-latest, windows-latest)
 
 steps:
-# Step 1: Install .NET SDK 8
+
+# Step 1: Checkout the repository
+- task: Checkout@1
+
+# Step 2: Install .NET SDK (Optional if already included in the agent)
 - task: UseDotNet@2
   inputs:
     packageType: 'sdk'
-    version: '8.x'  # Updated to .NET 8 SDK
-    installationPath: $(Agent.ToolsDirectory)/dotnet
+    version: '8.x'  # Specify .NET version you're using (e.g., .NET 8.x)
 
-# Step 2: Restore NuGet Packages for the C# Project and Test Project
+# Step 3: Restore NuGet packages (if necessary)
 - task: DotNetCoreCLI@2
   inputs:
     command: 'restore'
-    projects: |
-      ind-tableau-alert-dashboard-risk-queue/ind-tableau-alert-dashboard-risk-queue.csproj
-      ind-tableau-alert-dashboard-risk-queue-unittest/ind-tableau-alert-dashboard-risk-queue-unittest.csproj
+    projects: '**/*.csproj'
 
-# Step 3: Build the Projects
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'build'
-    projects: |
-      ind-tableau-alert-dashboard-risk-queue/ind-tableau-alert-dashboard-risk-queue.csproj
-      ind-tableau-alert-dashboard-risk-queue-unittest/ind-tableau-alert-dashboard-risk-queue-unittest.csproj
-
-# Step 4: Run Tests and Collect Code Coverage (only for main project)
+# Step 4: Run Tests and Collect Code Coverage
 - task: DotNetCoreCLI@2
   inputs:
     command: 'test'
-    projects: '**/ind-tableau-alert-dashboard-risk-queue-unittest/ind-tableau-alert-dashboard-risk-queue-unittest.csproj'
-    arguments: '--collect:"Code Coverage" --exclude "[*]ind-tableau-alert-dashboard-risk-queue-unittest.dll" --exclude "[*]StackExchange.Redis.dll"'
+    projects: '**/ind-tableau-alert-dashboard-risk-queue-unittest/ind-tableau-alert-dashboard-risk-queue-unittest.csproj'  # Update path if needed
+    arguments: '--collect:"Code Coverage"'
 
-# Step 5: Publish Code Coverage Results
+# Step 5: List the contents of the TestResults folder (Optional for debugging)
+- script: |
+    echo "Listing TestResults directory:"
+    ls -R $(Build.SourcesDirectory)/TestResults
+  displayName: 'List Test Results Directory'
+
+# Step 6: Publish Code Coverage Results (for Cobertura format, common with Coverlet)
 - task: PublishCodeCoverageResults@2
   inputs:
-    codeCoverageTool: 'Coverlet'  # Tool you used for collecting coverage (e.g., Coverlet, Visual Studio, etc.)
-    summaryFileLocation: '$(Build.SourcesDirectory)/TestResults/*/coverage.cobertura.xml'  # Path to the code coverage report
-    reportDirectory: '$(Build.SourcesDirectory)/TestResults/*/codecoverage'
-    failIfCoverageFails: true  # Optional: Fail the build if the code coverage is below a threshold
+    codeCoverageTool: 'Cobertura'  # Use Cobertura (default for Coverlet)
+    summaryFileLocation: '$(Build.SourcesDirectory)/TestResults/*/coverage.cobertura.xml'  # Path to the Cobertura XML report
+    reportDirectory: '$(Build.SourcesDirectory)/TestResults/*/codecoverage'  # Optional: Store the detailed report
+    failIfCoverageFails: true  # Optional: Fail the build if code coverage fails
+
+# Optional: Add further steps for build, deploy, or other tasks
