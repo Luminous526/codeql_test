@@ -41,13 +41,13 @@ steps:
   displayName: 'Run unit tests'
   inputs:
     command: 'test'
-    arguments: '--no-build --configuration $(BuildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/Coverage/'
+    arguments: '--no-build --configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/Coverage/'
     publishTestResults: true
     projects: '**/*.Tests.csproj'
 
 # Step 6: Generate HTML Coverage Report
 - script: |
-    reportgenerator -reports:$(Build.SourcesDirectory)/TestResults/Coverage/**/coverage.cobertura.xml -targetdir:$(Build.SourcesDirectory)/CodeCoverage -reporttypes:HtmlInline_AzurePipelines
+    reportgenerator -reports:$(Build.SourcesDirectory)/**/coverage.cobertura.xml -targetdir:$(Build.SourcesDirectory)/CodeCoverage -reporttypes:HtmlInline_AzurePipelines
   displayName: 'Create code coverage report'
 
 # Step 7: Publish Code Coverage Results
@@ -55,4 +55,4 @@ steps:
   displayName: 'Publish code coverage report'
   inputs:
     codeCoverageTool: 'cobertura'
-    summaryFileLocation: '$(Build.SourcesDirectory)/TestResults/Coverage/**/coverage.cobertura.xml'
+    summaryFileLocation: '$(Build.SourcesDirectory)/**/coverage.cobertura.xml'
