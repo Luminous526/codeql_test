@@ -1,0 +1,4 @@
+name: "My CodeQL config"
+disable-default-queries: false
+queries:
+  - uses: github/codeql/csharp-queries@main
