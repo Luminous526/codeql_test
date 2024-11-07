@@ -22,7 +22,7 @@ steps:
 
 - script: |
     test_folder='ind-tableau-alert-dashboard-risk-queue-unittest'
-    test_project_path="$test_folder/$test_folder.csproj"
+    test_project_path="$test_folder/FunctionTests.csproj"
     results_directory="$(System.DefaultWorkingDirectory)/TestResults"
     dotnet test $test_project_path --configuration Release --collect:"XPlat Code Coverage" --results-directory $results_directory
   displayName: 'Run Tests and Collect Coverage'
@@ -42,9 +42,9 @@ steps:
 - script: |
     wget https://github.com/github/codeql-cli-binaries/releases/download/v2.7.2/codeql-linux64.zip
     unzip codeql-linux64.zip -d codeql
-    ./codeql/codeql database create codeql-db --language=csharp --source-root=.
+    ./codeql/codeql/codeql database create codeql-db --language=csharp --source-root=.
   displayName: 'Download and Initialize CodeQL'
 
 - script: |
-    ./codeql/codeql database analyze codeql-db --format=sarif-latest --output=codeql-results.sarif
+    ./codeql/codeql/codeql database analyze codeql-db --format=sarif-latest --output=codeql-results.sarif
   displayName: 'Analyze with CodeQL'
