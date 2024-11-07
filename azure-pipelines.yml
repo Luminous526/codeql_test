@@ -10,13 +10,16 @@ steps:
 - task: UseDotNet@2
   inputs:
     packageType: 'sdk'
-    version: '6.x'
+    version: '8.x'
     installationPath: $(Agent.ToolsDirectory)/dotnet
 
 - script: |
-    dotnet restore
-    dotnet build --configuration Release
-    dotnet test --configuration Release --collect:"XPlat Code Coverage"
+    #current_folder=$(basename $(pwd))
+    current_folder="ind-tableau-alert-dashboard-risk-queue"
+    project_path="$current_folder/$current_folder.csproj"
+    dotnet restore $project_path
+    dotnet build $project_path --configuration Release
+    dotnet test $project_path --configuration Release --collect:"XPlat Code Coverage"
   displayName: 'Restore, Build, and Test'
 
 - task: PublishCodeCoverageResults@1
