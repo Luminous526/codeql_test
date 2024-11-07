@@ -1,34 +1,43 @@
----
 trigger:
-  - main
+- main  # This triggers the pipeline for changes to the 'main' branch. Change if needed.
+
 pool:
-  vmImage: windows-latest
+  vmImage: 'windows-latest'  # Using a Windows-based build agent
+
 steps:
-  - task: UseDotNet@2
-    inputs:
-      packageType: sdk
-      version: 8.x
-      installationPath: $(Agent.ToolsDirectory)/dotnet
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: restore
-      projects:
-        - ind-tableau-alert-dashboard-risk-queue/ind-tableau-alert-dashboard-risk-queue.csproj
-        - ind-tableau-alert-dashboard-risk-queue-unittest/ind-tableau-alert-dashboard-risk-queue-unittest.csproj
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: build
-      projects:
-        - ind-tableau-alert-dashboard-risk-queue/ind-tableau-alert-dashboard-risk-queue.csproj
-        - ind-tableau-alert-dashboard-risk-queue-unittest/ind-tableau-alert-dashboard-risk-queue-unittest.csproj
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: test
-      projects: "**/ind-tableau-alert-dashboard-risk-queue-unittest/ind-tableau-alert\
-        -dashboard-risk-queue-unittest.csproj"
-      arguments: --collect:"Code Coverage"
-  - task: PublishCodeCoverageResults@1
-    inputs:
-      codeCoverageTool: Coverlet
-      summaryFileLocation: $(Build.SourcesDirectory)/TestResults/*.xml
-      reportDirectory: $(Build.ArtifactStagingDirectory)/coverage-report
+# Step 1: Install .NET SDK 8
+- task: UseDotNet@2
+  inputs:
+    packageType: 'sdk'
+    version: '8.x'  # Updated to .NET 8 SDK
+    installationPath: $(Agent.ToolsDirectory)/dotnet
+
+# Step 2: Restore NuGet Packages for the C# Project and Test Project
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'restore'
+    projects: |
+      ind-tableau-alert-dashboard-risk-queue/ind-tableau-alert-dashboard-risk-queue.csproj
+      ind-tableau-alert-dashboard-risk-queue-unittest/ind-tableau-alert-dashboard-risk-queue-unittest.csproj
+
+# Step 3: Build the Projects
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'build'
+    projects: |
+      ind-tableau-alert-dashboard-risk-queue/ind-tableau-alert-dashboard-risk-queue.csproj
+      ind-tableau-alert-dashboard-risk-queue-unittest/ind-tableau-alert-dashboard-risk-queue-unittest.csproj
+
+# Step 4: Run Tests and Collect Code Coverage
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'test'
+    projects: '**/ind-tableau-alert-dashboard-risk-queue-unittest/ind-tableau-alert-dashboard-risk-queue-unittest.csproj'  # Unit test project
+    arguments: '--collect:"Code Coverage"'  # Collect code coverage during tests
+
+# Step 5: Publish Code Coverage Results
+- task: PublishCodeCoverageResults@1
+  inputs:
+    codeCoverageTool: 'Coverlet'  # Use Coverlet for code coverage
+    summaryFileLocation: '$(Build.SourcesDirectory)/TestResults/*.xml'  # Path to the code coverage summary
+    reportDirectory: '$(Build.ArtifactStagingDirectory)/coverage-report'  # Output directory for coverage reports
