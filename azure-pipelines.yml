@@ -4,7 +4,7 @@ trigger:
       - main
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: 'ubuntu-18.04'
 
 steps:
 - task: UseDotNet@2
@@ -22,7 +22,7 @@ steps:
 
 - script: |
     test_folder='ind-tableau-alert-dashboard-risk-queue-unittest'
-    test_project_path="$test_folder/$test_folder.csproj"
+    test_project_path="$test_folder/FunctionTests.csproj"
     results_directory="$(System.DefaultWorkingDirectory)/TestResults"
     dotnet test $test_project_path --configuration Release --collect:"XPlat Code Coverage" --results-directory $results_directory
   displayName: 'Run Tests and Collect Coverage'
