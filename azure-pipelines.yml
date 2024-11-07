@@ -7,61 +7,73 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-- task: UseDotNet@2
-  inputs:
-    packageType: 'sdk'
-    version: '8.x'
-    installationPath: $(Agent.ToolsDirectory)/dotnet
+  # Install .NET SDK (if not already available on the agent)
+  - task: UseDotNet@2
+    inputs:
+      packageType: 'sdk'
+      version: '8.x'
+      installationPath: $(Agent.ToolsDirectory)/dotnet
 
-- script: |
-    current_folder='ind-tableau-alert-dashboard-risk-queue'
-    project_path="$current_folder/$current_folder.csproj"
-    dotnet restore $project_path
-    dotnet build $project_path --configuration Release
-  displayName: 'Restore and Build'
+  # Restore and build the .NET project
+  - script: |
+      current_folder='ind-tableau-alert-dashboard-risk-queue'
+      project_path="$current_folder/$current_folder.csproj"
+      dotnet restore $project_path
+      dotnet build $project_path --configuration Release
+    displayName: 'Restore and Build'
 
-- script: |
-    test_folder='ind-tableau-alert-dashboard-risk-queue-unittest'
-    test_project_path="$test_folder/$test_folder.csproj"
-    results_directory="$(System.DefaultWorkingDirectory)/TestResults"
-    dotnet test $test_project_path --configuration Release --collect:"XPlat Code Coverage" --results-directory $results_directory
-  displayName: 'Run Tests and Collect Coverage'
+  # Run Unit Tests and Collect Code Coverage
+  - script: |
+      test_folder='ind-tableau-alert-dashboard-risk-queue-unittest'
+      test_project_path="$test_folder/$test_folder.csproj"
+      results_directory="$(System.DefaultWorkingDirectory)/TestResults"
+      dotnet test $test_project_path --configuration Release --collect:"XPlat Code Coverage" --results-directory $results_directory
+    displayName: 'Run Tests and Collect Coverage'
 
-- script: |
-    echo "Listing contents of $(System.DefaultWorkingDirectory):"
-    ls -R $(System.DefaultWorkingDirectory)
-  displayName: 'List Directory Contents'
+  # List Directory Contents
+  - script: |
+      echo "Listing contents of $(System.DefaultWorkingDirectory):"
+      ls -R $(System.DefaultWorkingDirectory)
+    displayName: 'List Directory Contents'
 
-- task: PublishCodeCoverageResults@2
-  inputs:
-    codeCoverageTool: 'Cobertura'
-    summaryFileLocation: '$(System.DefaultWorkingDirectory)/TestResults/**/coverage.cobertura.xml'
-    reportDirectory: '$(System.DefaultWorkingDirectory)/CodeCoverage'
-    failIfCoverageEmpty: true
+  # Publish Code Coverage Results
+  - task: PublishCodeCoverageResults@2
+    inputs:
+      codeCoverageTool: 'Cobertura'
+      summaryFileLocation: '$(System.DefaultWorkingDirectory)/TestResults/**/coverage.cobertura.xml'
+      reportDirectory: '$(System.DefaultWorkingDirectory)/CodeCoverage'
+      failIfCoverageEmpty: true
 
-# Step to download and initialize CodeQL binary
-- script: |
-    wget https://github.com/github/codeql-cli-binaries/releases/latest/download/codeql-linux64.zip -O codeql-linux64.zip
-    unzip codeql-linux64.zip -d codeql
-  displayName: 'Download and Initialize CodeQL Binary'
+  # Install CodeQL CLI
+  - script: |
+      wget https://github.com/github/codeql-cli-binaries/releases/download/v2.7.2/codeql-linux64.zip
+      unzip codeql-linux64.zip -d codeql
+    displayName: 'Download and Extract CodeQL CLI'
 
-# Full clone of the CodeQL repository to ensure all dependencies are available
-- script: |
-    git clone --depth 1 https://github.com/github/codeql.git codeql-queries
-  displayName: 'Clone Full CodeQL Repository'
+  # Manually Download CodeQL C# Query Packs
+  - script: |
+      mkdir -p $(System.DefaultWorkingDirectory)/codeql-queries
+      cd $(System.DefaultWorkingDirectory)/codeql-queries
+      # Download essential CodeQL queries for C#
+      wget https://raw.githubusercontent.com/github/codeql/main/csharp/ql/src/Security/CWE-078/CommandInjection.ql
+      wget https://raw.githubusercontent.com/github/codeql/main/csharp/ql/src/Security/CWE-89/SQLInjection.ql
+      # Add more queries as necessary for your project
+    displayName: 'Download C# CodeQL Queries'
 
-# Step to install all dependencies for C# queries
-- script: |
-    cd codeql-queries
-    ../codeql/codeql/codeql pack install
-  displayName: 'Install CodeQL Pack Dependencies'
+  # Initialize CodeQL Database for Analysis
+  - script: |
+      ./codeql/codeql/codeql database create codeql-db --language=csharp --source-root=$(System.DefaultWorkingDirectory)/$current_folder
+    displayName: 'Initialize CodeQL Database'
 
-# Step to create the CodeQL database
-- script: |
-    ./codeql/codeql/codeql database create codeql-db --language=csharp --source-root=.
-  displayName: 'Create CodeQL Database'
+  # Run CodeQL Analysis
+  - script: |
+      ./codeql/codeql/codeql database analyze codeql-db --format=sarif-latest --output=codeql-results.sarif --queries=$(System.DefaultWorkingDirectory)/codeql-queries/*
+    displayName: 'Run CodeQL Analysis'
 
-# Step to analyze the database with CodeQL using the C# queries
-- script: |
-    ./codeql/codeql/codeql database analyze codeql-db codeql-queries/csharp --format=sarif-latest --output=codeql-results.sarif
-  displayName: 'Analyze with CodeQL'
+  # Upload CodeQL Results
+  - task: PublishBuildArtifacts@1
+    inputs:
+      artifactName: 'CodeQLResults'
+      targetPath: '$(System.DefaultWorkingDirectory)/codeql-results.sarif'
+      publishLocation: 'Container'
+    displayName: 'Publish CodeQL Analysis Results'
