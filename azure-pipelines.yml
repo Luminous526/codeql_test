@@ -49,7 +49,9 @@ steps:
     wget https://github.com/github/codeql/archive/refs/heads/main.zip -O codeql.zip
     unzip codeql.zip -d codeql
     cd codeql/codeql-main
-    # Initialize CodeQL C# queries
+    # Check for correct extraction of the 'codeql' binary
+    ls -l
+    # Copy the C# queries to the working directory
     cp -r csharp/ql $(System.DefaultWorkingDirectory)/codeql-queries
   displayName: 'Download and Initialize CodeQL'
 
@@ -61,6 +63,7 @@ steps:
 
 # Step 8: Analyze with CodeQL
 - script: |
+    cd $(System.DefaultWorkingDirectory)/codeql-queries
     ./codeql/codeql database create codeql-db --language=csharp --source-root=.
     ./codeql/codeql database analyze codeql-db --format=sarif-latest --output=codeql-results.sarif
   displayName: 'Analyze with CodeQL'
