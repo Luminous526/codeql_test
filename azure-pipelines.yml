@@ -28,18 +28,24 @@ steps:
       ind-tableau-alert-dashboard-risk-queue/ind-tableau-alert-dashboard-risk-queue.csproj
       ind-tableau-alert-dashboard-risk-queue-unittest/ind-tableau-alert-dashboard-risk-queue-unittest.csproj
 
-# Step 4: Run Tests and Collect Code Coverage (only for main project)
+# Step 4: Run Tests and Collect Code Coverage (only for the unit test project)
 - task: DotNetCoreCLI@2
   inputs:
     command: 'test'
     projects: '**/ind-tableau-alert-dashboard-risk-queue-unittest/ind-tableau-alert-dashboard-risk-queue-unittest.csproj'
     arguments: '--collect:"Code Coverage" --exclude "[*]ind-tableau-alert-dashboard-risk-queue-unittest.dll" --exclude "[*]StackExchange.Redis.dll"'
 
-# Step 5: Publish Code Coverage Results
+# Step 5: List the contents of the TestResults folder (for debugging)
+- script: |
+    echo "Listing contents of TestResults folder:"
+    dir $(Build.SourcesDirectory)\TestResults
+  displayName: 'List Test Results Directory'
+
+# Step 6: Publish Code Coverage Results
 - task: PublishCodeCoverageResults@2
   inputs:
-    codeCoverageTool: 'Cobertura'  # Coverlet generates Cobertura reports by default
-    summaryFileLocation: '$(Build.SourcesDirectory)/TestResults/*/coverage.cobertura.xml'  # Path to the Cobertura code coverage report
-    reportDirectory: '$(Build.SourcesDirectory)/TestResults/*/codecoverage'  # Optional: Additional detailed report location
-    failIfCoverageFails: true  # Optional: Fail the build if code coverage is below a threshold
+    codeCoverageTool: 'Cobertura'  # Using Cobertura format for Coverlet reports
+    summaryFileLocation: '$(Build.SourcesDirectory)/TestResults/*/coverage.cobertura.xml'  # Path to Cobertura report
+    reportDirectory: '$(Build.SourcesDirectory)/TestResults/*/codecoverage'  # Optional detailed report location
+    failIfCoverageFails: true  # Optional: Fail the build if code coverage fails
 
