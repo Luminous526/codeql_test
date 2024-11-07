@@ -10,7 +10,7 @@ steps:
 - task: UseDotNet@2
   inputs:
     packageType: 'sdk'
-    version: '6.x'
+    version: '8.x'
     installationPath: $(Agent.ToolsDirectory)/dotnet
 
 - script: |
@@ -26,7 +26,7 @@ steps:
     ls -R $(System.DefaultWorkingDirectory)
   displayName: 'List Directory Contents'
 
-- task: PublishCodeCoverageResults@1
+- task: PublishCodeCoverageResults@2
   inputs:
     codeCoverageTool: 'Cobertura'
     summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.cobertura.xml'
