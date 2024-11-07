@@ -12,14 +12,6 @@ steps:
     version: '8.x'  # .NET 8 SDK
     installationPath: $(Agent.ToolsDirectory)/dotnet
 
-# Step 2: Install ReportGenerator tool
-- task: DotNetCoreCLI@2
-  displayName: 'Install ReportGenerator'
-  inputs:
-    command: custom
-    custom: tool
-    arguments: 'install --global dotnet-reportgenerator-globaltool'
-
 # Step 3: Restore NuGet Packages for the Project
 - task: DotNetCoreCLI@2
   inputs:
@@ -38,21 +30,16 @@ steps:
 
 # Step 5: Run Unit Tests and Collect Code Coverage
 - task: DotNetCoreCLI@2
-  displayName: 'Run unit tests'
+  displayName: 'dotnet test'
   inputs:
     command: 'test'
-    arguments: '--no-build --configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Agent.TempDirectory)/TestResults/Coverage/'
+    arguments: '--configuration $(buildConfiguration) --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura'
     publishTestResults: true
-    projects: '**/*.Tests.csproj'
-
-# Step 6: Generate HTML Coverage Report
-- script: |
-    reportgenerator -reports:$(Agent.TempDirectory)/**/coverage.cobertura.xml -targetdir:$(Agent.TempDirectory)/CodeCoverage -reporttypes:HtmlInline_AzurePipelines
-  displayName: 'Create code coverage report'
+    projects: '**/*.Tests.csproj' # update with your test project directory
 
 # Step 7: Publish Code Coverage Results
 - task: PublishCodeCoverageResults@1
   displayName: 'Publish code coverage report'
   inputs:
-    codeCoverageTool: 'cobertura'
+    codeCoverageTool: 'Cobertura'
     summaryFileLocation: '$(Agent.TempDirectory)/**/coverage.cobertura.xml'
