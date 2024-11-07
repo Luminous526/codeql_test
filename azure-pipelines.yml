@@ -57,13 +57,13 @@ steps:
 
 # Step 7: Install CodeQL Pack Dependencies
 - script: |
-    cd $(System.DefaultWorkingDirectory)/codeql-queries
-    ./codeql/codeql pack install
+    cd $(System.DefaultWorkingDirectory)/codeql/codeql-main
+    ./codeql pack install
   displayName: 'Install CodeQL Pack Dependencies'
 
 # Step 8: Analyze with CodeQL
 - script: |
-    cd $(System.DefaultWorkingDirectory)/codeql-queries
-    ./codeql/codeql database create codeql-db --language=csharp --source-root=.
-    ./codeql/codeql database analyze codeql-db --format=sarif-latest --output=codeql-results.sarif
+    cd $(System.DefaultWorkingDirectory)/codeql/codeql-main
+    ./codeql database create codeql-db --language=csharp --source-root=.
+    ./codeql database analyze codeql-db --format=sarif-latest --output=codeql-results.sarif
   displayName: 'Analyze with CodeQL'
