@@ -33,7 +33,7 @@ steps:
   inputs:
     command: 'test'
     projects: '**/ind-tableau-alert-dashboard-risk-queue-unittest/ind-tableau-alert-dashboard-risk-queue-unittest.csproj'
-    arguments: '--collect:"Code Coverage" --exclude "[*]ind-tableau-alert-dashboard-risk-queue-unittest.dll" --exclude "[*]StackExchange.Redis.dll"'
+    arguments: '--collect:"Code Coverage"'
 
 # Step 5: List the contents of the TestResults folder (for debugging)
 - script: |
