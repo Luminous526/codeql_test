@@ -39,12 +39,24 @@ steps:
     reportDirectory: '$(System.DefaultWorkingDirectory)/CodeCoverage'
     failIfCoverageEmpty: true
 
+# Step to download and initialize CodeQL binary
 - script: |
-    wget https://github.com/github/codeql-cli-binaries/releases/latest/download/codeql-linux64.zip
+    wget https://github.com/github/codeql-cli-binaries/releases/latest/download/codeql-linux64.zip -O codeql-linux64.zip
     unzip codeql-linux64.zip -d codeql
-    ./codeql/codeql/codeql database create codeql-db --language=csharp --source-root=.
-  displayName: 'Download and Initialize CodeQL'
+  displayName: 'Download and Initialize CodeQL Binary'
 
+# Download only the C# CodeQL query pack
 - script: |
-    ./codeql/codeql/codeql database analyze codeql-db --format=sarif-latest --output=codeql-results.sarif
+    wget https://raw.githubusercontent.com/github/codeql/main/csharp/codeql-pack.yml -P codeql-queries/csharp
+    wget https://raw.githubusercontent.com/github/codeql/main/csharp/ql/src/Security/CWE-078/CommandInjection.ql -P codeql-queries/csharp/ql/src/Security/CWE-078/
+  displayName: 'Download CodeQL C# Query Pack'
+
+# Step to create the CodeQL database
+- script: |
+    ./codeql/codeql/codeql database create codeql-db --language=csharp --source-root=.
+  displayName: 'Create CodeQL Database'
+
+# Step to analyze the database with CodeQL using the specific C# queries
+- script: |
+    ./codeql/codeql/codeql database analyze codeql-db codeql-queries/csharp --format=sarif-latest --output=codeql-results.sarif
   displayName: 'Analyze with CodeQL'
