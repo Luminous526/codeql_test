@@ -45,11 +45,11 @@ steps:
     unzip codeql-linux64.zip -d codeql
   displayName: 'Download and Initialize CodeQL Binary'
 
-# Download only the C# CodeQL query pack
+# Download only the csharp CodeQL queries as a zip file
 - script: |
-    wget https://raw.githubusercontent.com/github/codeql/main/csharp/codeql-pack.yml -P codeql-queries/csharp
-    wget https://raw.githubusercontent.com/github/codeql/main/csharp/ql/src/Security/CWE-078/CommandInjection.ql -P codeql-queries/csharp/ql/src/Security/CWE-078/
-  displayName: 'Download CodeQL C# Query Pack'
+    wget https://github.com/github/codeql/archive/refs/heads/main.zip -O codeql-queries.zip
+    unzip codeql-queries.zip "codeql-main/csharp/*" -d codeql-queries
+  displayName: 'Download and Extract C# CodeQL Query Pack'
 
 # Step to create the CodeQL database
 - script: |
@@ -58,5 +58,5 @@ steps:
 
 # Step to analyze the database with CodeQL using the specific C# queries
 - script: |
-    ./codeql/codeql/codeql database analyze codeql-db codeql-queries/csharp --format=sarif-latest --output=codeql-results.sarif
+    ./codeql/codeql/codeql database analyze codeql-db codeql-queries/codeql-main/csharp --format=sarif-latest --output=codeql-results.sarif
   displayName: 'Analyze with CodeQL'
