@@ -22,6 +22,11 @@ steps:
     dotnet test $project_path --configuration Release --collect:"XPlat Code Coverage"
   displayName: 'Restore, Build, and Test'
 
+  script: |
+    echo "Listing contents of $(System.DefaultWorkingDirectory):"
+    ls -R $(System.DefaultWorkingDirectory)
+  displayName: 'List Directory Contents'
+
 - task: PublishCodeCoverageResults@1
   inputs:
     codeCoverageTool: 'Cobertura'
