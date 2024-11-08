@@ -8,7 +8,6 @@
             <ModulePaths>
               <Exclude>
                 <ModulePath>*unittest*</ModulePath>
-                <ModulePath>stackexchange.redis.dll</ModulePath>
               </Exclude>
             </ModulePaths>
           </CodeCoverage>
