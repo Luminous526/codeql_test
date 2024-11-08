@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RunSettings>
+  <RunConfiguration>
+    <ResultsDirectory>$(Build.ArtifactStagingDirectory)/TestResults</ResultsDirectory>
+  </RunConfiguration>
   <DataCollectionRunSettings>
     <DataCollectors>
-      <DataCollector friendlyName="Code Coverage">
+      <DataCollector friendlyName="Code Coverage" enabled="true">
         <Configuration>
           <Exclude>
-            <ModulePath>.*-unittest.dll</ModulePath>
-            <ModulePath>.*TestAdapter.dll</ModulePath>
-            <ModulePath>.*TestFramework.dll</ModulePath>
+            [ind-tableau-alert-dashboard-risk-queue.dll]
+            [stackexchange.redis.dll]
           </Exclude>
         </Configuration>
       </DataCollector>
