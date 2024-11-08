@@ -8,7 +8,6 @@ using Amazon.SimpleNotificationService.Model;
 using System.Net;
 using StackExchange.Redis;
 
-
 namespace ind_tableau_alert_dashboard_risk_queue_unittest
 {
     public class FunctionTests
@@ -32,50 +31,7 @@ namespace ind_tableau_alert_dashboard_risk_queue_unittest
             targetFunction = new Function(mockDynamoDB.Object, mockSNS.Object, mockRedisMultiplexer.Object);
         }
 
-        //[Fact]
-        //public async Task FunctionHandler_Should_Process_Messages_And_Delete_Items()
-        //{
-        //    // Arrange
-        //    var scanResponse = new ScanResponse
-        //    {
-        //        Items = new List<Dictionary<string, AttributeValue>>
-        //    {
-        //        new Dictionary<string, AttributeValue>
-        //        {
-        //            { "SitePair", new AttributeValue { S = "sitePair1" } }
-        //        }
-        //    }
-        //    };
-
-        //    var publishResponse = new PublishResponse
-        //    {
-        //        HttpStatusCode = HttpStatusCode.OK
-        //    };
-
-        //    var deleteItemResponse = new DeleteItemResponse
-        //    {
-        //        HttpStatusCode = HttpStatusCode.OK
-        //    };
-
-        //    mockDynamoDB.Setup(db => db.ScanAsync(It.IsAny<ScanRequest>(), default))
-        //        .ReturnsAsync(scanResponse);
-
-        //    mockSNS.Setup(sns => sns.PublishAsync(It.IsAny<PublishRequest>(), default))
-        //        .ReturnsAsync(publishResponse);
-
-        //    mockDynamoDB.Setup(db => db.DeleteItemAsync(It.IsAny<DeleteItemRequest>(), default))
-        //        .ReturnsAsync(deleteItemResponse);
-
-        //    // Act
-        //    await targetFunction.FunctionHandler();
-
-        //    // Assert
-        //    mockDynamoDB.Verify(db => db.ScanAsync(It.IsAny<ScanRequest>(), default), Times.Once);
-        //    mockSNS.Verify(sns => sns.PublishAsync(It.IsAny<PublishRequest>(), default), Times.Once);
-        //    mockDynamoDB.Verify(db => db.DeleteItemAsync(It.IsAny<DeleteItemRequest>(), default), Times.Once);
-        //}
-
-        [Fact]
+        [Fact(DisplayName = "PublishMessage_Should_Publish_Message_To_SNS")]
         public async Task PublishMessage_Should_Publish_Message_To_SNS()
         {
             // Arrange
