@@ -31,7 +31,7 @@ namespace ind_tableau_alert_dashboard_risk_queue_unittest
             targetFunction = new Function(mockDynamoDB.Object, mockSNS.Object, mockRedisMultiplexer.Object);
         }
 
-        [Fact(DisplayName = "PublishMessage_Should_Publish_Message_To_SNS")]
+        [Fact(DisplayName = "test1")]
         public async Task PublishMessage_Should_Publish_Message_To_SNS()
         {
             // Arrange
@@ -50,7 +50,7 @@ namespace ind_tableau_alert_dashboard_risk_queue_unittest
             Assert.Equal(HttpStatusCode.OK, result);
         }
 
-        [Fact]
+        [Fact(DisplayName = "test2")]
         public async Task GetAlerts_DynamoDB_ValidRequest_ReturnsListOfSitePairs()
         {
             // Arrange
@@ -81,7 +81,7 @@ namespace ind_tableau_alert_dashboard_risk_queue_unittest
             Assert.Equal(scanResponse.Items[1]["SitePair"].S, result[1]);
         }
 
-        [Fact]
+        [Fact(DisplayName = "test3")]
         public async Task GetAlerts_Redis_ValidRequest_ReturnsListOfSitePairs()
         {
             // Arrange
@@ -102,7 +102,7 @@ namespace ind_tableau_alert_dashboard_risk_queue_unittest
             Assert.Equal(keys[1], result[1]);
         }
 
-        [Fact]
+        [Fact(DisplayName = "test4")]
         public async Task DeleteAlert_Redis_ValidRequest_CallsDeleteItemAsync()
         {
             // Arrange
@@ -129,7 +129,7 @@ namespace ind_tableau_alert_dashboard_risk_queue_unittest
                 db.KeyDeleteAsync((RedisKey)key, It.IsAny<CommandFlags>()), Times.Once);
         }
 
-        [Fact]
+        [Fact(DisplayName = "test5")]
         public async Task DeleteAlert_DynamoDB_ValidRequest_CallsDeleteItemAsync()
         {
             // Arrange
