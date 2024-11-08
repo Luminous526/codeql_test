@@ -6,10 +6,7 @@
         <Configuration>
           <CodeCoverage>
             <ModulePaths>
-              <Exclude>
-                <ModulePath>.*unittest.*</ModulePath>
-                <ModulePath>.*stackexchange.redis.*</ModulePath>
-              </Exclude>
+              <!-- No exclusions here -->
             </ModulePaths>
           </CodeCoverage>
         </Configuration>
