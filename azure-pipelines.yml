@@ -21,7 +21,7 @@ steps:
       ind-tableau-alert-dashboard-risk-queue-unittest/ind-tableau-alert-dashboard-risk-queue-unittest.csproj
 
 # Step 3: Build the Projects
-- task: DotNetCoreCLI@2`
+- task: DotNetCoreCLI@2
   inputs:
     command: 'build'
     projects: |
