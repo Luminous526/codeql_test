@@ -7,7 +7,7 @@
           <CodeCoverage>
             <ModulePaths>
               <Include>
-                <ModulePath>.*ind-tableau-alert-dashboard-risk-queue.*</ModulePath>
+                <ModulePath>.*ind-tableau-alert-dashboard-risk-queue.dll</ModulePath>
               </Include>
             </ModulePaths>
           </CodeCoverage>
