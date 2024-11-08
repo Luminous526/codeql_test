@@ -37,5 +37,4 @@ steps:
     codeCoverageTool: 'Cobertura'
     summaryFileLocation: '$(System.DefaultWorkingDirectory)/TestResults/Coverage/coverage.cobertura.xml'
     reportDirectory: '$(System.DefaultWorkingDirectory)/TestResults/Coverage'
-    failIfCoverageEmpty: true
-  displayName: 'Publish Code Coverage Results'
+    failIfCoverageEmpty
