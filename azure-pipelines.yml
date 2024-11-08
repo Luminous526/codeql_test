@@ -33,7 +33,7 @@ steps:
   inputs:
     command: 'test'
     projects: '**/ind-tableau-alert-dashboard-risk-queue-unittest/ind-tableau-alert-dashboard-risk-queue-unittest.csproj'  # Unit test project
-    arguments: '--collect:"Code Coverage"'  # Collect code coverage during tests
+    arguments: '--collect:"Code Coverage" --exclude "[ind-tableau-alert-dashboard-risk-queue.dll, stackexchange.redis.dll]"'  # Collect code coverage during tests
 
 # Step 5: Publish Code Coverage Results
 - task: PublishCodeCoverageResults@1
