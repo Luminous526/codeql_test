@@ -1,45 +1,41 @@
 trigger:
-- main  # Triggers on changes to the main branch
+  branches:
+    include:
+      - main
 
 pool:
   vmImage: 'windows-latest'
 
 steps:
-# Step 1: Install .NET SDK 8
 - task: UseDotNet@2
   inputs:
     packageType: 'sdk'
-    version: '8.x'  # .NET 8 SDK
-    installationPath: $(Agent.ToolsDirectory)/dotnet
+    version: '8.x'
+  displayName: 'Install .NET SDK 8.x'
 
-# Step 3: Restore NuGet Packages for the Project
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'restore'
-    projects: |
-      ind-tableau-alert-dashboard-risk-queue/ind-tableau-alert-dashboard-risk-queue.csproj
-      ind-tableau-alert-dashboard-risk-queue-unittest/ind-tableau-alert-dashboard-risk-queue-unittest.csproj
+- script: |
+    dotnet restore ind-tableau-alert-dashboard-risk-queue/ind-tableau-alert-dashboard-risk-queue.csproj
+    dotnet restore ind-tableau-alert-dashboard-risk-queue-unittest/ind-tableau-alert-dashboard-risk-queue-unittest.csproj
+  displayName: 'Restore Packages'
 
-# Step 4: Build the Projects
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'build'
-    projects: |
-      ind-tableau-alert-dashboard-risk-queue/ind-tableau-alert-dashboard-risk-queue.csproj
-      ind-tableau-alert-dashboard-risk-queue-unittest/ind-tableau-alert-dashboard-risk-queue-unittest.csproj
+- script: |
+    dotnet build ind-tableau-alert-dashboard-risk-queue/ind-tableau-alert-dashboard-risk-queue.csproj --configuration Release
+    dotnet build ind-tableau-alert-dashboard-risk-queue-unittest/ind-tableau-alert-dashboard-risk-queue-unittest.csproj --configuration Release
+  displayName: 'Build Projects'
 
-# Step 5: Run Unit Tests and Collect Code Coverage
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet test'
-  inputs:
-    command: 'test'
-    arguments: '--configuration $(buildConfiguration) --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura'
-    publishTestResults: true
-    projects: '**/*.Tests.csproj' # update with your test project directory
+- script: |
+    dotnet test ind-tableau-alert-dashboard-risk-queue-unittest/ind-tableau-alert-dashboard-risk-queue-unittest.csproj \
+      --configuration Release \
+      --collect:"XPlat Code Coverage" \
+      /p:CollectCoverage=true \
+      /p:CoverletOutputFormat=cobertura \
+      /p:CoverletOutput=./TestResults/Coverage/
+  displayName: 'Run Tests with Code Coverage'
 
-# Step 7: Publish Code Coverage Results
 - task: PublishCodeCoverageResults@1
-  displayName: 'Publish code coverage report'
   inputs:
     codeCoverageTool: 'Cobertura'
-    summaryFileLocation: '$(Agent.TempDirectory)/**/coverage.cobertura.xml'
+    summaryFileLocation: '$(System.DefaultWorkingDirectory)/TestResults/Coverage/coverage.cobertura.xml'
+    reportDirectory: '$(System.DefaultWorkingDirectory)/TestResults/Coverage'
+    failIfCoverageEmpty: true
+  displayName: 'Publish Code Coverage Results'
