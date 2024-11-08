@@ -6,7 +6,9 @@
         <Configuration>
           <CodeCoverage>
             <ModulePaths>
-              <!-- No exclusions here -->
+              <Include>
+                <ModulePath>.*ind-tableau-alert-dashboard-risk-queue.*</ModulePath>
+              </Include>
             </ModulePaths>
           </CodeCoverage>
         </Configuration>
