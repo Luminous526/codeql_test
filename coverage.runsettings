@@ -7,7 +7,8 @@
           <CodeCoverage>
             <ModulePaths>
               <Exclude>
-                <ModulePath>*unittest*</ModulePath>
+                <ModulePath>.*unittest.*</ModulePath>
+                <ModulePath>.*stackexchange.redis.*</ModulePath>
               </Exclude>
             </ModulePaths>
           </CodeCoverage>
