@@ -13,11 +13,11 @@ steps:
     version: '8.x'
   displayName: 'Install .NET SDK 8.x'
 
-- script: dotnet build --configuration Release
+- script: dotnet build ind-tableau-alert-dashboard-risk-queue/ind-tableau-alert-dashboard-risk-queue.sln --configuration Release
   displayName: 'Build Solution'
 
 - script: |
-    dotnet test ind-tableau-alert-dashboard-risk-queue-unittest/ind-tableau-alert-dashboard-risk-queue-unittest.csproj \
+    dotnet test ind-tableau-alert-dashboard-risk-queue/ind-tableau-alert-dashboard-risk-queue.sln \
       --collect "Code Coverage" \
       --configuration Release \
       --settings ./coverage.runsettings
