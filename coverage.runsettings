@@ -1,16 +1,17 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <RunSettings>
-  <RunConfiguration>
-    <ResultsDirectory>$(Build.ArtifactStagingDirectory)/TestResults</ResultsDirectory>
-  </RunConfiguration>
   <DataCollectionRunSettings>
     <DataCollectors>
-      <DataCollector friendlyName="Code Coverage" enabled="true">
+      <DataCollector friendlyName="Code Coverage">
         <Configuration>
-          <Exclude>
-            [ind-tableau-alert-dashboard-risk-queue.dll]
-            [stackexchange.redis.dll]
-          </Exclude>
+          <CodeCoverage>
+            <ModulePaths>
+              <Exclude>
+                <ModulePath>*unittest*</ModulePath>
+                <ModulePath>stackexchange.redis.dll</ModulePath>
+              </Exclude>
+            </ModulePaths>
+          </CodeCoverage>
         </Configuration>
       </DataCollector>
     </DataCollectors>
