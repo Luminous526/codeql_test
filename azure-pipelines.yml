@@ -13,29 +13,15 @@ steps:
     version: '8.x'
   displayName: 'Install .NET SDK 8.x'
 
-- script: |
-    dotnet restore ind-tableau-alert-dashboard-risk-queue/ind-tableau-alert-dashboard-risk-queue.csproj
-    dotnet restore ind-tableau-alert-dashboard-risk-queue-unittest/ind-tableau-alert-dashboard-risk-queue-unittest.csproj
+- script: dotnet restore
   displayName: 'Restore Packages'
 
-- script: |
-    dotnet build ind-tableau-alert-dashboard-risk-queue/ind-tableau-alert-dashboard-risk-queue.csproj --configuration Release
-    dotnet build ind-tableau-alert-dashboard-risk-queue-unittest/ind-tableau-alert-dashboard-risk-queue-unittest.csproj --configuration Release
-  displayName: 'Build Projects'
+- script: dotnet build --configuration Release
+  displayName: 'Build Solution'
 
 - script: |
     dotnet test ind-tableau-alert-dashboard-risk-queue-unittest/ind-tableau-alert-dashboard-risk-queue-unittest.csproj \
+      --collect "Code Coverage" \
       --configuration Release \
-      --collect:"XPlat Code Coverage" \
-      /p:CollectCoverage=true \
-      /p:CoverletOutputFormat=cobertura \
-      /p:CoverletOutput=./TestResults/Coverage/
+      --settings ./coverage.runsettings
   displayName: 'Run Tests with Code Coverage'
-
-- task: PublishCodeCoverageResults@1
-  inputs:
-    codeCoverageTool: 'Cobertura'
-    summaryFileLocation: '$(System.DefaultWorkingDirectory)/TestResults/Coverage/coverage.cobertura.xml'
-    reportDirectory: '$(System.DefaultWorkingDirectory)/TestResults/Coverage'
-    failIfCoverageEmpty: true
-  displayName: 'Publish Code Coverage Results'
