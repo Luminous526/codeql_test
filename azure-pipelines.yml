@@ -51,4 +51,4 @@ steps:
 
 - task: AdvancedSecurity-Publish@1
   inputs:
-    SarifsInputDirectory: 'D:\a\_temp\.advsec'
+    SarifsInputDirectory: 'D:\a\_temp\advancedsecurity.codeql'
