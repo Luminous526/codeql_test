@@ -5,6 +5,11 @@ pool:
   vmImage: 'windows-latest'  # Using a Windows-based build agent
 
 steps:
+- task: AdvancedSecurity-Codeql-Init@1
+  inputs:
+    enableAutomaticCodeQLInstall: true
+    languages: 'csharp, cpp, java, javascript'
+    querysuite: 'code-scanning'
 # Step 1: Install .NET SDK 8
 - task: UseDotNet@2
   inputs:
@@ -41,3 +46,7 @@ steps:
     codeCoverageTool: 'Coverlet'  # Use Coverlet for code coverage
     summaryFileLocation: '$(Build.SourcesDirectory)/TestResults/*.xml'  # Path to the code coverage summary
     reportDirectory: '$(Build.ArtifactStagingDirectory)/coverage-report'  # Output directory for coverage reports
+
+- task: AdvancedSecurity-Codeql-Analyze@1
+
+- task: AdvancedSecurity-Publish@1
