@@ -50,3 +50,5 @@ steps:
 - task: AdvancedSecurity-Codeql-Analyze@1
 
 - task: AdvancedSecurity-Publish@1
+  inputs:
+    SarifsInputDirectory: 'D:\a\_temp\.advsec'
