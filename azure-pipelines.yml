@@ -8,7 +8,7 @@ steps:
 - task: AdvancedSecurity-Codeql-Init@1
   inputs:
     enableAutomaticCodeQLInstall: true
-    languages: 'csharp, cpp, java, javascript'
+    languages: 'csharp'
     querysuite: 'code-scanning'
 # Step 1: Install .NET SDK 8
 - task: UseDotNet@2
