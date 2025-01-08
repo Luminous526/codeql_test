@@ -18,7 +18,7 @@ steps:
 - task: AdvancedSecurity-Codeql-Init@1
   inputs:
     enableAutomaticCodeQLInstall: true
-    languages: 'csharp'
+    languages: 'cpp'
     querysuite: 'code-scanning'
 - task: NuGetToolInstaller@1
 
