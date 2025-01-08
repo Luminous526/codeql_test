@@ -6,16 +6,46 @@ pool:
 
 steps:
 
-# Initialize CodeQL database 
 - task: AdvancedSecurity-Codeql-Init@1
-  inputs: 
-    languages: 'csharp' 
-  displayName: 'Advanced Security Initialize CodeQL' 
+  inputs:
+    enableAutomaticCodeQLInstall: true
+    languages: 'csharp'
+    querysuite: 'code-scanning'
+    buildtype: 'None'
 
-# Build project using Autobuild or your own custom build steps 
-- task: AdvancedSecurity-Codeql-Autobuild@1
-  displayName: 'Advanced Security Autobuild' 
 
-# Run analysis 
-- task: AdvancedSecurity-Codeql-Analyze@1 
-  displayName: 'Advanced Security Code Scanning'
+- task: UseDotNet@2
+  inputs:
+    packageType: 'sdk'
+    version: '8.x'  # Updated to .NET 8 SDK
+    installationPath: $(Agent.ToolsDirectory)/dotnet
+
+# Step 2: Restore NuGet Packages for the C# Project and Test Project
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'restore'
+    projects: |
+      ind-tableau-alert-dashboard-risk-queue/ind-tableau-alert-dashboard-risk-queue.csproj
+      ind-tableau-alert-dashboard-risk-queue-unittest/ind-tableau-alert-dashboard-risk-queue-unittest.csproj
+
+# Step 3: Build the Projects
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'build'
+    projects: |
+      ind-tableau-alert-dashboard-risk-queue/ind-tableau-alert-dashboard-risk-queue.csproj
+      ind-tableau-alert-dashboard-risk-queue-unittest/ind-tableau-alert-dashboard-risk-queue-unittest.csproj
+
+# Step 4: Run Tests and Collect Code Coverage
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'test'
+    projects: '**/ind-tableau-alert-dashboard-risk-queue-unittest/ind-tableau-alert-dashboard-risk-queue-unittest.csproj'  # Unit test project
+    arguments: '--collect:"Code Coverage" --settings $(Build.SourcesDirectory)/coverage.runsettings'  # Collect code coverage during tests
+
+- task: AdvancedSecurity-Codeql-Analyze@1
+  inputs:
+    outputDirectory: '$(Build.ArtifactStagingDirectory)/sarif-results'
+- task: AdvancedSecurity-Publish@1
+  inputs:
+    SarifsInputDirectory: '$(Build.ArtifactStagingDirectory)/sarif-results'
