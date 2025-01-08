@@ -4,7 +4,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
 trigger:
-- main
+- none
 
 pool:
   vmImage: 'windows-latest'
@@ -15,6 +15,11 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
+- task: AdvancedSecurity-Codeql-Init@1
+  inputs:
+    enableAutomaticCodeQLInstall: true
+    languages: 'csharp'
+    querysuite: 'code-scanning'
 - task: NuGetToolInstaller@1
 
 - task: NuGetCommand@2
@@ -32,3 +37,9 @@ steps:
   inputs:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+
+- task: AdvancedSecurity-Codeql-Analyze@1
+  inputs:
+    WaitForProcessing: true
+
+- task: AdvancedSecurity-Publish@1
