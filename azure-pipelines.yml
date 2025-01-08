@@ -1,5 +1,5 @@
 trigger:
-- main  # This triggers the pipeline for changes to the 'main' branch. Change if needed.
+- none  # This triggers the pipeline for changes to the 'main' branch. Change if needed.
 
 pool:
   vmImage: 'windows-latest'  # Using a Windows-based build agent
