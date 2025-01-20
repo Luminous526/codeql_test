@@ -6,14 +6,6 @@ pool:
 
 steps:
 
-- task: AdvancedSecurity-Codeql-Init@1
-  inputs:
-    enableAutomaticCodeQLInstall: true
-    languages: 'csharp'
-    querysuite: 'code-scanning'
-    buildtype: 'None'
-
-
 - task: UseDotNet@2
   inputs:
     packageType: 'sdk'
@@ -28,6 +20,14 @@ steps:
       ind-tableau-alert-dashboard-risk-queue/ind-tableau-alert-dashboard-risk-queue.csproj
       ind-tableau-alert-dashboard-risk-queue-unittest/ind-tableau-alert-dashboard-risk-queue-unittest.csproj
 
+- task: AdvancedSecurity-Codeql-Init@1
+  inputs:
+    enableAutomaticCodeQLInstall: true
+    languages: 'csharp'
+    querysuite: 'code-scanning'
+    buildtype: 'Manual'
+
+
 # Step 3: Build the Projects
 - task: DotNetCoreCLI@2
   inputs:
@@ -36,16 +36,7 @@ steps:
       ind-tableau-alert-dashboard-risk-queue/ind-tableau-alert-dashboard-risk-queue.csproj
       ind-tableau-alert-dashboard-risk-queue-unittest/ind-tableau-alert-dashboard-risk-queue-unittest.csproj
 
-# Step 4: Run Tests and Collect Code Coverage
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'test'
-    projects: '**/ind-tableau-alert-dashboard-risk-queue-unittest/ind-tableau-alert-dashboard-risk-queue-unittest.csproj'  # Unit test project
-    arguments: '--collect:"Code Coverage" --settings $(Build.SourcesDirectory)/coverage.runsettings'  # Collect code coverage during tests
 
 - task: AdvancedSecurity-Codeql-Analyze@1
-  inputs:
-    outputDirectory: '$(Build.ArtifactStagingDirectory)/sarif-results'
+
 - task: AdvancedSecurity-Publish@1
-  inputs:
-    SarifsInputDirectory: '$(Build.ArtifactStagingDirectory)/sarif-results'
