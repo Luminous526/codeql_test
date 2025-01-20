@@ -29,7 +29,7 @@ steps:
 - task: CmdLine@1
   displayName: Initialize CodeQL database
   inputs:
-    filename: '$(System.DefaultWorkingDirectory)/codeql/codeql'
+    filename: '$(System.DefaultWorkingDirectory)/codeql/codeql/codeql'
     script: "codeql database init --language csharp --trace-process-name Agent.Worker.exe --source-root . --begin-tracing=$(System.DefaultWorkingDirectory)/db"
 
 - task: PowerShell@2
