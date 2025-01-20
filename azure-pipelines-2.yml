@@ -18,12 +18,19 @@ steps:
     feedsToUse: 'select'
 
 - script: |
+      mkdir -p $(System.DefaultWorkingDirectory)/codeql
+      curl -L -o $(System.DefaultWorkingDirectory)/codeql/codeql.zip https://github.com/github/codeql-cli-binaries/releases/latest/download/codeql.zip
+      unzip $(System.DefaultWorkingDirectory)/codeql/codeql.zip -d $(System.DefaultWorkingDirectory)/codeql
+      export PATH=$(System.DefaultWorkingDirectory)/codeql/codeql:$PATH
+  displayName: 'Download and extract CodeQL CLI'
+
+- script: |
       mkdir -p $(System.DefaultWorkingDirectory)/db
 - task: CmdLine@1
   displayName: Initialize CodeQL database
   inputs:
-    filename: '$(System.DefaultWorkingDirectory)/db'
-    script: "codeql database init --language csharp --trace-process-name Agent.Worker.exe --source-root . --begin-tracing db"
+    filename: '$(System.DefaultWorkingDirectory)/codeql'
+    script: "codeql database init --language csharp --trace-process-name Agent.Worker.exe --source-root . --begin-tracing=$(System.DefaultWorkingDirectory)/db"
 
 - task: PowerShell@2
   inputs:
