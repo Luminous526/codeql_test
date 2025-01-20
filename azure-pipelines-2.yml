@@ -28,7 +28,7 @@ steps:
   displayName: Initialize CodeQL database
   inputs:
     filename: '$(System.DefaultWorkingDirectory)/codeql/codeql/codeql'
-    script: "codeql database create csharp-database --language=csharp"
+    script: "codeql database init --language csharp --trace-process-name Agent.Worker.exe --begin-tracing $(System.DefaultWorkingDirectory)/db"
 
 - task: PowerShell@2
   inputs:
