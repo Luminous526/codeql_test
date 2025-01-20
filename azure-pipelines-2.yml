@@ -16,11 +16,15 @@ steps:
     command: 'restore'
     restoreSolution: '**/*.sln'
     feedsToUse: 'select'
+
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: 'mkdir -p $(System.DefaultWorkingDirectory)/db'
 - task: CmdLine@1
   displayName: Initialize CodeQL database
   inputs:
-    filename: '$(System.DefaultWorkingDirectory)/db'
-    script: "codeql database init --language csharp --trace-process-name Agent.Worker.exe --source-root . --begin-tracing db"
+    script: "codeql database init --language csharp --trace-process-name Agent.Worker.exe --source-root . --begin-tracing=$(System.DefaultWorkingDirectory)/db"
 
 - task: PowerShell@2
   inputs:
