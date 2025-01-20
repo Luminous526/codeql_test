@@ -24,20 +24,21 @@ steps:
 - task: CmdLine@1
   displayName: Initialize CodeQL database
   inputs:
-    script: "codeql database init --language csharp --trace-process-name Agent.Worker.exe --source-root . --begin-tracing=$(System.DefaultWorkingDirectory)/db"
+    filename: '$(System.DefaultWorkingDirectory)/db'
+    script: "codeql database init --language csharp --trace-process-name Agent.Worker.exe --source-root . --begin-tracing db"
 
 - task: PowerShell@2
   inputs:
     targetType: 'inline'
     script: |
       $json = Get-Content $(System.DefaultWorkingDirectory)/db/temp/tracingEnvironment/start-tracing.json | ConvertFrom-Json
-                   $json.PSObject.Properties | ForEach-Object {
-                       $template = "##vso[task.setvariable variable="
-                       $template += $_.Name
-                       $template += "]"
-                       $template += $_.Value
-                       echo "$template"
-                   }
+                         $json.PSObject.Properties | ForEach-Object {
+                             $template = "##vso[task.setvariable variable="
+                             $template += $_.Name
+                             $template += "]"
+                             $template += $_.Value
+                             echo "$template"
+                         }
 
     # Execute the pre-defined build step. Note the `msbuildArgs` variable.
 - task: VSBuild@1
