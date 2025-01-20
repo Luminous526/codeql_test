@@ -4,7 +4,7 @@
 # https://aka.ms/yaml
 
 trigger:
-- main
+- none
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -67,9 +67,10 @@ steps:
 
 - task: CmdLine@2
   inputs:
+    workingDirectory: '$(System.DefaultWorkingDirectory)/db/SARIF'
     script: 'codeql database analyze <csharp-database> codeql/csharp-queries:codeql-suites/csharp-code-scanning.qls --format=sarifv2.1.0 --output=csharp-results.sarif --download'
 
 - task: AdvancedSecurity-Publish@1
   inputs:
-    SarifsInputDirectory: '$(System.DefaultWorkingDirectory)/db'
+    SarifsInputDirectory: '$(System.DefaultWorkingDirectory)/db/SARIF'
     Category: 'code-scanning'
