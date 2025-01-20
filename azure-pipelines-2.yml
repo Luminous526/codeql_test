@@ -1,0 +1,75 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+
+- task: NuGetCommand@2
+  inputs:
+    command: 'restore'
+    restoreSolution: '**/*.sln'
+    feedsToUse: 'select'
+- task: CmdLine@1
+  displayName: Initialize CodeQL database
+  inputs:
+    filename: '$(System.DefaultWorkingDirectory)/db'
+    script: "codeql database init --language csharp --trace-process-name Agent.Worker.exe --source-root . --begin-tracing db"
+
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: |
+      $json = Get-Content $(System.DefaultWorkingDirectory)/db/temp/tracingEnvironment/start-tracing.json | ConvertFrom-Json
+                   $json.PSObject.Properties | ForEach-Object {
+                       $template = "##vso[task.setvariable variable="
+                       $template += $_.Name
+                       $template += "]"
+                       $template += $_.Value
+                       echo "$template"
+                   }
+
+    # Execute the pre-defined build step. Note the `msbuildArgs` variable.
+- task: VSBuild@1
+  inputs:
+          solution: '**/*.sln'
+          msbuildArgs: /p:OutDir=$(Build.ArtifactStagingDirectory)
+          platform: Any CPU
+          configuration: Release
+          # Execute a clean build, in order to remove any existing build artifacts prior to the build.
+          clean: True
+  displayName: Visual Studio Build
+
+    # Read and set the generated environment variables to end build tracing. This is done in PowerShell in this example.
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: |
+      $json = Get-Content $(System.DefaultWorkingDirectory)/db/temp/tracingEnvironment/start-tracing.json | ConvertFrom-Json
+                   $json.PSObject.Properties | ForEach-Object {
+                       $template = "##vso[task.setvariable variable="
+                       $template += $_.Name
+                       $template += "]"
+                       $template += $_.Value
+                       echo "$template"
+                   }
+
+- task: CmdLine@2
+  displayName: Finalize CodeQL database
+  inputs:
+    script: 'codeql database finalize db'
+
+- task: CmdLine@2
+  inputs:
+    script: 'codeql database analyze <csharp-database> codeql/csharp-queries:codeql-suites/csharp-code-scanning.qls --format=sarifv2.1.0 --output=csharp-results.sarif --download'
+
+- task: AdvancedSecurity-Publish@1
+  inputs:
+    SarifsInputDirectory: '$(System.DefaultWorkingDirectory)/db'
+    Category: 'code-scanning'
