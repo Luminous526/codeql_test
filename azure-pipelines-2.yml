@@ -24,10 +24,10 @@ steps:
       export PATH=$(System.DefaultWorkingDirectory)/codeql/codeql:$PATH
   displayName: 'Download and extract CodeQL CLI'
 
-- task: CmdLine@2
-  displayName: Initialize CodeQL database
-  inputs:
-    script: "codeql database create $(System.DefaultWorkingDirectory)/db --command msbuild **/*.sln /p:OutDir=$(Build.ArtifactStagingDirectory) /p:Configuration=Release /p:Platform='Any CPU' --language=csharp"
+- script: |
+    codeql database create $(System.DefaultWorkingDirectory)/db --language=csharp
+  displayName: 'Create CodeQL Database'
+
 
 - task: PowerShell@2
   inputs:
