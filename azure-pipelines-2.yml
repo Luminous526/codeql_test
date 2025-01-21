@@ -28,7 +28,7 @@ steps:
   displayName: Initialize CodeQL database
   inputs:
     filename: '$(System.DefaultWorkingDirectory)/codeql/codeql/codeql'
-    script: "codeql database create $(System.DefaultWorkingDirectory)/db --language=csharp --source-root=D:\a\1\s"
+    script: "codeql database create $(System.DefaultWorkingDirectory)/db --language=csharp"
 
 - task: PowerShell@2
   inputs:
