@@ -41,8 +41,7 @@ steps:
 
 - task: CmdLine@2
   inputs:
-    workingDirectory: '$(System.DefaultWorkingDirectory)/db/SARIF'
-    script: 'codeql database analyze <csharp-database> codeql/csharp-queries:codeql-suites/csharp-code-scanning.qls --format=sarifv2.1.0 --output=csharp-results.sarif --download'
+    script: 'codeql database analyze D:\a\_temp\advancedsecurity.codeql\d\csharp codeql/csharp-queries:codeql-suites/csharp-code-scanning.qls --format=sarifv2.1.0 --output=csharp-results.sarif --download'
 
 - task: AdvancedSecurity-Publish@1
   inputs:
