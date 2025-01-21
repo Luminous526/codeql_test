@@ -18,11 +18,11 @@ steps:
     feedsToUse: 'select'
 
 - script: |
-      mkdir -p $(System.DefaultWorkingDirectory)/codeql
-      curl -L -o $(System.DefaultWorkingDirectory)/codeql/codeql.zip https://github.com/github/codeql-cli-binaries/releases/latest/download/codeql.zip
-      unzip $(System.DefaultWorkingDirectory)/codeql/codeql.zip -d $(System.DefaultWorkingDirectory)/codeql
-      export PATH=$(System.DefaultWorkingDirectory)/codeql/codeql:$PATH
-  displayName: 'Download and extract CodeQL CLI'
+    echo "Installing CodeQL CLI..."
+    wget https://github.com/github/codeql-cli-binaries/releases/download/v2.7.2/codeql-linux64.zip
+    unzip codeql-linux64.zip -d codeql
+    export PATH=$PATH:$(pwd)/codeql/codeql
+  displayName: 'Install CodeQL CLI'
 
 - script: |
     codeql database create $(System.DefaultWorkingDirectory)/db --language=csharp
