@@ -7,7 +7,7 @@ trigger:
 - none
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: 'windows-latest'
 
 steps:
 
@@ -19,16 +19,15 @@ steps:
 
 - script: |
     echo "Installing CodeQL CLI..."
-    wget https://github.com/github/codeql-cli-binaries/releases/download/v2.7.2/codeql-linux64.zip
-    unzip codeql-linux64.zip -d codeql
-    echo "##vso[task.setvariable variable=CODEQL_PATH]$(pwd)/codeql/codeql"
+    curl -LO https://github.com/github/codeql-cli-binaries/releases/download/v2.7.2/codeql-win64.zip
+    tar -xf codeql-win64.zip -C codeql
+    echo "##vso[task.setvariable variable=CODEQL_PATH]$(System.DefaultWorkingDirectory)\codeql\codeql"
   displayName: 'Install CodeQL CLI'
 
 - script: |
-    export PATH=$PATH:$(CODEQL_PATH)
-    codeql database create $(System.DefaultWorkingDirectory)/db --language=csharp
+    set PATH=%PATH%;$(CODEQL_PATH)
+    codeql database create $(System.DefaultWorkingDirectory)\db --language=csharp
   displayName: 'Create CodeQL Database'
-
 
 - task: NuGetCommand@2
   inputs:
