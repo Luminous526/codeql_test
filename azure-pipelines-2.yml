@@ -21,63 +21,22 @@ steps:
     echo "Installing CodeQL CLI..."
     wget https://github.com/github/codeql-cli-binaries/releases/download/v2.7.2/codeql-linux64.zip
     unzip codeql-linux64.zip -d codeql
-    export PATH=$PATH:$(pwd)/codeql/codeql
+    echo "##vso[task.setvariable variable=CODEQL_PATH]$(pwd)/codeql/codeql"
   displayName: 'Install CodeQL CLI'
 
 - script: |
+    export PATH=$PATH:$(CODEQL_PATH)
     codeql database create $(System.DefaultWorkingDirectory)/db --language=csharp
   displayName: 'Create CodeQL Database'
 
 
-- task: PowerShell@2
+- task: NuGetCommand@2
   inputs:
-    targetType: 'inline'
-    script: |
-      $json = Get-Content $(System.DefaultWorkingDirectory)/db/temp/tracingEnvironment/start-tracing.json | ConvertFrom-Json
-                         $json.PSObject.Properties | ForEach-Object {
-                             $template = "##vso[task.setvariable variable="
-                             $template += $_.Name
-                             $template += "]"
-                             $template += $_.Value
-                             echo "$template"
-                         }
+    restoreSolution: '$(solution)'
 
-    # Execute the pre-defined build step. Note the `msbuildArgs` variable.
 - task: VSBuild@1
   inputs:
-          solution: '**/*.sln'
-          msbuildArgs: /p:OutDir=$(Build.ArtifactStagingDirectory)
-          platform: Any CPU
-          configuration: Release
-          # Execute a clean build, in order to remove any existing build artifacts prior to the build.
-          clean: True
-  displayName: Visual Studio Build
-
-    # Read and set the generated environment variables to end build tracing. This is done in PowerShell in this example.
-- task: PowerShell@2
-  inputs:
-    targetType: 'inline'
-    script: |
-      $json = Get-Content $(System.DefaultWorkingDirectory)/db/temp/tracingEnvironment/start-tracing.json | ConvertFrom-Json
-                   $json.PSObject.Properties | ForEach-Object {
-                       $template = "##vso[task.setvariable variable="
-                       $template += $_.Name
-                       $template += "]"
-                       $template += $_.Value
-                       echo "$template"
-                   }
-
-- task: CmdLine@2
-  displayName: Finalize CodeQL database
-  inputs:
-    script: 'codeql database finalize db'
-
-- task: CmdLine@2
-  inputs:
-    workingDirectory: '$(System.DefaultWorkingDirectory)/db/SARIF'
-    script: 'codeql database analyze <csharp-database> codeql/csharp-queries:codeql-suites/csharp-code-scanning.qls --format=sarifv2.1.0 --output=csharp-results.sarif --download'
-
-- task: AdvancedSecurity-Publish@1
-  inputs:
-    SarifsInputDirectory: '$(System.DefaultWorkingDirectory)/db/SARIF'
-    Category: 'code-scanning'
+    solution: '$(solution)'
+    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
