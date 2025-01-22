@@ -44,3 +44,8 @@ steps:
   inputs:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+
+- script: |
+    set PATH=%PATH%;$(CODEQL_PATH)
+    codeql database analyze $(System.DefaultWorkingDirectory)\db codeql/csharp-queries:codeql-suites/csharp-code-scanning.qls--format=sarifv2.1.0 --output=csharp-results.sarif --download
+  displayName: 'Code Scanning'
