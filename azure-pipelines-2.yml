@@ -47,5 +47,5 @@ steps:
 
 
 - script: |
-    codeql database analyze $(System.DefaultWorkingDirectory)/db --format=sarif-latest --output=$(Build.ArtifactStagingDirectory)/results.sarif --query=
+    codeql database analyze $(System.DefaultWorkingDirectory)/db --format=sarif-latest --output=$(Build.ArtifactStagingDirectory)/results.sarif <query>
   displayName: 'Analyze CodeQL Database'
