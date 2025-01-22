@@ -57,3 +57,8 @@ steps:
 - script: |
     codeql database analyze $(System.DefaultWorkingDirectory)/db --format=sarif-latest --output=$(Build.ArtifactStagingDirectory)/results.sarif
   displayName: 'Analyze CodeQL Database'
+
+- task: AdvancedSecurity-Publish@1
+  inputs:
+    SarifsInputDirectory: '$(Build.ArtifactStagingDirectory)/results.sarif'
+    Category: 'Code Scanning'
