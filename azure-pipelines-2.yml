@@ -46,8 +46,6 @@ steps:
     configuration: '$(buildConfiguration)'
 
 
-#- script: |
-#    codeql database analyze $(System.DefaultWorkingDirectory)/db --format=sarif-latest --output=$(Build.ArtifactStagingDirectory)/results.sarif --queries=$(System.DefaultWorkingDirectory)/codeql-suites/csharp-code-scanning.qls
-#  displayName: 'Analyze CodeQL Database'
 - script: |
-    codeql database analyze $(System.DefaultWorkingDirectory)/db --help
+    codeql database analyze $(System.DefaultWorkingDirectory)/db --format=sarif-latest --output=$(Build.ArtifactStagingDirectory)/results.sarif --query=codescanning
+  displayName: 'Analyze CodeQL Database'
