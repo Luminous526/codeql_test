@@ -60,5 +60,5 @@ steps:
 
 - task: AdvancedSecurity-Publish@1
   inputs:
-    SarifsInputDirectory: '$(Build.ArtifactStagingDirectory)/results.sarif'
+    SarifsInputDirectory: '$(Build.ArtifactStagingDirectory)'
     Category: 'Code Scanning'
