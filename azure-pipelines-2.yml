@@ -28,6 +28,8 @@ steps:
     codeql database create $(System.DefaultWorkingDirectory)/db --language=csharp
   displayName: 'Create CodeQL Database'
 - task: NuGetToolInstaller@1
+- script: |
+    dir /s /b *.qls
 
 - task: NuGetCommand@2
   inputs:
