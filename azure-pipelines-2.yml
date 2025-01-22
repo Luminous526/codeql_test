@@ -21,11 +21,11 @@ steps:
     mkdir codeql
     tar -xf codeql-win64.zip -C codeql
     echo "##vso[task.setvariable variable=CODEQL_PATH]$(System.DefaultWorkingDirectory)\codeql\codeql"
+    echo "##vso[task.setvariable variable=PATH]$(System.DefaultWorkingDirectory)\codeql\codeql;%PATH%"
   displayName: 'Install CodeQL CLI'
 
 - script: |
-    set PATH=%PATH%;$(CODEQL_PATH)
-    codeql database create $(System.DefaultWorkingDirectory)\db --language=csharp
+    codeql database create $(System.DefaultWorkingDirectory)/db --language=csharp
   displayName: 'Create CodeQL Database'
 - task: NuGetToolInstaller@1
 
