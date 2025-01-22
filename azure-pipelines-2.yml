@@ -17,7 +17,7 @@ steps:
 
 - script: |
     echo "Installing CodeQL CLI..."
-    curl -LO https://github.com/github/codeql-cli-binaries/releases/download/v2.7.2/codeql-win64.zip
+    curl -LO https://github.com/github/codeql-cli-binaries/releases/download/v2.20.1/codeql-win64.zip
     mkdir codeql
     tar -xf codeql-win64.zip -C codeql
     echo "##vso[task.setvariable variable=CODEQL_PATH]$(System.DefaultWorkingDirectory)\codeql\codeql"
