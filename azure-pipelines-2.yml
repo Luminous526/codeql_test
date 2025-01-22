@@ -25,6 +25,13 @@ steps:
   displayName: 'Install CodeQL CLI'
 
 - script: |
+    echo "Installing CodeQL Bundle"
+    curl -LO https://github.com/github/codeql-action/releases/download/codeql-bundle-v2.20.1/codeql-bundle-win64.tar.gz
+    tar -xf codeql-bundle-win64.tar.gz -C codeql
+    echo "##vso[task.setvariable variable=CODEQL_PATH]$(System.DefaultWorkingDirectory)\codeql\codeql"
+    echo "##vso[task.setvariable variable=PATH]$(System.DefaultWorkingDirectory)\codeql\codeql;%PATH%"
+  displayName: 'Install codeql-bundle'
+- script: |
     codeql database create $(System.DefaultWorkingDirectory)/db --language=csharp
   displayName: 'Create CodeQL Database'
 
