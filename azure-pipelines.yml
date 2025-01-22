@@ -39,4 +39,6 @@ steps:
 
 - task: AdvancedSecurity-Codeql-Analyze@1
 
+- script: |
+    dir /s /b *.sarif
 - task: AdvancedSecurity-Publish@1
