@@ -46,8 +46,6 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
-- script: |
-    dir /s /b *.qls
 
 - script: |
     codeql database analyze $(System.DefaultWorkingDirectory)/db --format=sarif-latest --output=$(Build.ArtifactStagingDirectory)/results.sarif (System.DefaultWorkingDirectory)/qlpacks/codeql/csharp-queries/codeql-suites/csharp-code-scanning.qls
