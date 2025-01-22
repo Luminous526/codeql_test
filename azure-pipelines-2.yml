@@ -11,12 +11,6 @@ pool:
 
 steps:
 
-- task: NuGetCommand@2
-  inputs:
-    command: 'restore'
-    restoreSolution: '**/*.sln'
-    feedsToUse: 'select'
-
 - script: |
     echo "Installing CodeQL CLI..."
     curl -LO https://github.com/github/codeql-cli-binaries/releases/download/v2.7.2/codeql-win64.zip
@@ -29,6 +23,8 @@ steps:
     set PATH=%PATH%;$(CODEQL_PATH)
     codeql database create $(System.DefaultWorkingDirectory)\db --language=csharp
   displayName: 'Create CodeQL Database'
+- task: NuGetToolInstaller@1
+
 - task: NuGetCommand@2
   inputs:
     restoreSolution: '$(solution)'
@@ -37,5 +33,10 @@ steps:
   inputs:
     solution: '$(solution)'
     msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+
+- task: VSTest@2
+  inputs:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
