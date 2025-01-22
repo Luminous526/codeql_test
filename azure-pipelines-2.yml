@@ -55,5 +55,5 @@ steps:
 
 
 - script: |
-    codeql database analyze $(System.DefaultWorkingDirectory)/db --format=sarif-latest --output=$(Build.ArtifactStagingDirectory)/results.sarif (System.DefaultWorkingDirectory)/qlpacks/codeql/csharp-queries/codeql-suites/csharp-code-scanning.qls
+    codeql database analyze $(System.DefaultWorkingDirectory)/db --format=sarif-latest --output=$(Build.ArtifactStagingDirectory)/results.sarif
   displayName: 'Analyze CodeQL Database'
