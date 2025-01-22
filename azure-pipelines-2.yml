@@ -27,8 +27,7 @@ steps:
 - script: |
     codeql database create $(System.DefaultWorkingDirectory)/db --language=csharp
   displayName: 'Create CodeQL Database'
-- script: |
-    dir /s /b *.qls
+
 - task: NuGetToolInstaller@1
 
 - task: NuGetCommand@2
@@ -47,6 +46,8 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
+- script: |
+    dir /s /b *.qls
 
 - script: |
     codeql database analyze $(System.DefaultWorkingDirectory)/db --format=sarif-latest --output=$(Build.ArtifactStagingDirectory)/results.sarif (System.DefaultWorkingDirectory)/qlpacks/codeql/csharp-queries/codeql-suites/csharp-code-scanning.qls
